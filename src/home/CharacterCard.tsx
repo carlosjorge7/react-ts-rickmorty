@@ -22,7 +22,6 @@ const CharacterCard: React.FC<CharacterProps> = ({ character }) => {
         </Typography>
       </CardContent>
       <CardActions>
-        {/* Enlace al Detalle con el ID del personaje */}
         <Link to={`/character/${character.id}`}>
           <Button size="small">Detalle</Button>
         </Link>
