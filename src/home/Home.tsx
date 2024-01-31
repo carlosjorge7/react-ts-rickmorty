@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
 import CharacterCard from "./CharacterCard";
-import { Character, Res } from "./models/home-model";
+import { Character } from "./models/home-model";
 import { Input, Grid, Button } from "@mui/material";
 import Dialog from "@mui/material/Dialog";
+import Checkbox from "@mui/material/Checkbox";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 
 const Home: React.FC = () => {
   const [characters, setCharacters] = useState<Character[]>([]);
+  const [page, setPage] = useState<number>(1);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -21,14 +23,20 @@ const Home: React.FC = () => {
   };
 
   useEffect(() => {
-    fetch("https://rickandmortyapi.com/api/character")
-      .then((response) => response.json())
-      .then((data: Res) => {
-        console.log(data);
-        setCharacters(data.results);
-      })
-      .catch((error) => console.error("Error fetching data:", error));
-  }, []);
+    fetchCharacters();
+  }, [page]);
+
+  const fetchCharacters = async () => {
+    const response = await fetch(
+      `https://rickandmortyapi.com/api/character?page=${page}`
+    );
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+    const data = await response.json();
+    console.log(data);
+    setCharacters(data.results);
+  };
 
   const filteredCharacters: Character[] = characters.filter(
     (character: Character) =>
@@ -41,6 +49,16 @@ const Home: React.FC = () => {
     const noun = count > 1 ? "Personajes" : "Personaje";
     heading = count + " " + noun;
   }
+
+  const handlePreviousPage = () => {
+    if (page > 1) {
+      setPage(page - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    setPage(page + 1);
+  };
 
   return (
     <>
@@ -61,6 +79,12 @@ const Home: React.FC = () => {
       <Dialog open={openDialog} onClose={handleCloseDialog}>
         <DialogTitle>Filtros</DialogTitle>
         <DialogContent>
+          <span>Alive</span>
+          <Checkbox></Checkbox> <br />
+          <span>Dead</span>
+          <Checkbox></Checkbox> <br />
+          <span>Unknown</span>
+          <Checkbox></Checkbox> <br />
           {/* Aquí puedes colocar tus opciones de filtros */}
           {/* Por ejemplo, podrías agregar más Input, Checkbox, etc. */}
         </DialogContent>
@@ -76,6 +100,10 @@ const Home: React.FC = () => {
           <CharacterCard key={character.id} character={character} />
         ))}
       </div>
+
+      <Button onClick={handlePreviousPage}>Anterior</Button>
+      <span>{page}</span>
+      <Button onClick={handleNextPage}>Siguiente</Button>
     </>
   );
 };

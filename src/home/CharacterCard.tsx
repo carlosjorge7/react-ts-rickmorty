@@ -7,8 +7,15 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { CharacterProps } from "./models/home-model";
 import { Link } from "react-router-dom";
+import { format } from "date-fns";
 
 const CharacterCard: React.FC<CharacterProps> = ({ character }) => {
+  // Formatear la fecha createdAt
+  const formattedCreatedAt = format(
+    new Date(character.created),
+    "dd/MM/yyyy HH:mm:ss"
+  );
+
   return (
     <Card sx={{ margin: 2 }}>
       <CardMedia sx={{ height: 250 }} image={character.image} />
@@ -18,6 +25,9 @@ const CharacterCard: React.FC<CharacterProps> = ({ character }) => {
         </Typography>
         <Typography variant="body2" color="text.secondary">
           {character.status}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Creado el: {formattedCreatedAt}
         </Typography>
       </CardContent>
       <CardActions>
